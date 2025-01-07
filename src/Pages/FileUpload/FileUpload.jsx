@@ -12,6 +12,9 @@ import ReportPage from "../ReportPage/ReportPage";
 import HelpPage from "../HelpPage/HelpPage";
 
 const FileUpload = () => {
+  
+  const[options,setOptions] = useState({});
+  const[selectedOption,setselectedOption] = useState('');
   const [fromMail, setFromMail] = useState("");
   const [password, setPassword] = useState("");
   const [emailContent, setEmailContent] = useState("");
@@ -124,6 +127,21 @@ const FileUpload = () => {
 
     handleEmailPreview();
   };
+  useEffect(() =>{
+    axios.get('http://127.0.0.1:8000/mailman/v1/api/mailproviders/')
+      .then((response) => {
+        setOptions(Object.keys(response.data));
+      })
+      .catch((error) =>{
+        console.log("erroor fetching data",error);
+
+  })
+  
+
+  },[]);
+  const handleChange = (event) =>{
+    setselectedOption(event.target.value);
+  }
 
   useEffect(() => {
     let shouldStop = false;
@@ -227,7 +245,24 @@ const FileUpload = () => {
   }, [confirm]);
   return !viewReport ? (
     <div className={styles.background_container}>
+      
       <>
+      <div>
+        <label htmlFor="dropdown">Select Mail</label>
+        <select id="dropdown" value={selectedOption} onChange={handleChange}>
+        <option value="" disabled>Select Your Mail</option>
+        {Object.entries(options).map(([key, value]) => (
+          <option key={key} value={key}>
+            {value}
+          </option>
+        ))}
+
+        </select>
+      </div>
+      
+
+
+      
         <EmailPreview
           isOpen={isEmailModalOpen}
           onClose={handleCloseEmailModal}
